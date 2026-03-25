@@ -6,24 +6,29 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 
 dotenv.config();
-connectDB();
 
-const uploadsDir = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+const startServer = async () => {
+  await connectDB();
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+  const uploadsDir = path.join(__dirname, "uploads");
+  if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
 
-// Static uploads (licence, vehicle images)
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+  const app = express();
+  app.use(cors());
+  app.use(express.json());
 
-app.use("/api/auth", require("./routes/authRoutes"));
-app.use("/api/admin/dashboard", require("./routes/dashboardRoutes"));
-app.use("/api/vehicles", require("./routes/vehicleRoutes"));
-app.use("/api/bookings", require("./routes/bookingRoutes"));
-app.use("/api/users", require("./routes/userRoutes"));
+  // Static uploads (licence, vehicle images)
+  app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.listen(process.env.PORT, () =>
-  console.log("Server running on port " + process.env.PORT)
-);
+  app.use("/api/auth", require("./routes/authRoutes"));
+  app.use("/api/admin/dashboard", require("./routes/dashboardRoutes"));
+  app.use("/api/vehicles", require("./routes/vehicleRoutes"));
+  app.use("/api/bookings", require("./routes/bookingRoutes"));
+  app.use("/api/users", require("./routes/userRoutes"));
+
+  app.listen(process.env.PORT, () =>
+    console.log("Server running on port " + process.env.PORT)
+  );
+};
+
+startServer();
